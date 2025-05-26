@@ -112,50 +112,92 @@
       font-size: 16px;
       pointer-events: none;
     }
+    .lang-switch {
+      position: absolute;
+      top: 24px;
+      right: 32px;
+      z-index: 10;
+    }
+    .lang-switch button {
+      margin-left: 8px;
+      padding: 4px 12px;
+      font-size: 15px;
+      border: 1px solid #d32f2f;
+      background: #fff;
+      color: #d32f2f;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .lang-switch button.active, .lang-switch button:hover {
+      background: #d32f2f;
+      color: #fff;
+    }
   </style>
 </head>
 <body>
+  <div class="lang-switch">
+    <button id="lang-zh" class="active" onclick="setLang('zh')">中文</button>
+    <button id="lang-en" onclick="setLang('en')">English</button>
+    <button id="lang-ja" onclick="setLang('ja')">日本語</button>
+  </div>
   <div class="container">
-    <h2>寿司郎会员积分加成表</h2>
+    <h2 id="main-title">寿司郎会员积分加成表</h2>
     <table>
       <tr>
-        <th>等级</th>
-        <th>普通日每元积分</th>
-        <th>周二每元积分</th>
+        <th id="th-row-desc"></th>
+        <th id="th-level-red">赤食神</th>
+        <th id="th-level-silver">银食神</th>
+        <th id="th-level-gold">金食神</th>
+        <th id="th-level-black">黑食神</th>
+        <th id="th-level-origin">元食神</th>
       </tr>
       <tr>
-        <td>赤食神</td>
-        <td>1</td>
-        <td>1.5</td>
+        <td id="td-row-desc-visit"></td>
+        <td id="td-visit-red">-</td>
+        <td id="td-visit-silver">-</td>
+        <td id="td-visit-gold">35次</td>
+        <td id="td-visit-black">50次</td>
+        <td id="td-visit-origin">100次</td>
       </tr>
       <tr>
-        <td>银食神</td>
-        <td>1.1</td>
-        <td>1.5</td>
+        <td id="td-row-desc-amount"></td>
+        <td id="td-amount-red">0~2999</td>
+        <td id="td-amount-silver">3000~6999</td>
+        <td id="td-amount-gold">7000~9999</td>
+        <td id="td-amount-black">10000~19999</td>
+        <td id="td-amount-origin">20000以上</td>
       </tr>
       <tr>
-        <td>金食神</td>
-        <td>1.2</td>
-        <td>1.5</td>
+        <td id="td-row-desc-mult"></td>
+        <td id="td-mult-red">1倍</td>
+        <td id="td-mult-silver">1.1倍</td>
+        <td id="td-mult-gold">1.2倍</td>
+        <td id="td-mult-black">1.3倍</td>
+        <td id="td-mult-origin">1.5倍</td>
       </tr>
       <tr>
-        <td>黑食神</td>
-        <td>1.3</td>
-        <td>1.5</td>
+        <td id="td-row-desc-tue"></td>
+        <td id="td-tue-red">1.5倍</td>
+        <td id="td-tue-silver">1.5倍</td>
+        <td id="td-tue-gold">1.5倍</td>
+        <td id="td-tue-black">1.5倍</td>
+        <td id="td-tue-origin">1.5倍</td>
       </tr>
       <tr>
-        <td>元食神</td>
-        <td>1.5</td>
-        <td>1.5</td>
+        <td id="td-row-desc-vip"></td>
+        <td>-</td>
+        <td>-</td>
+        <td id="td-vip-gold">30元现金券1枚<br>星级礼品券1枚</td>
+        <td id="td-vip-black">50元现金券1枚<br>玉级礼品券1枚</td>
+        <td id="td-vip-origin">100元现金券1枚<br>钻级礼品券1枚</td>
       </tr>
     </table>
-    <div class="note">
-      注：周二会员日积分为普通日积分的1.5倍。
-    </div>
-    <h2>每一元消费对应实际积分（1元~20000元）</h2>
+    <div class="note" id="note2">注：周二会员日积分为普通日积分的1.5倍。</div>
+    <h2 id="dynamic-title">每一元消费对应实际积分（1元~20000元）</h2>
     <div style="margin-bottom:16px;text-align:right;">
       <input type="number" id="search-amount" min="1" max="20000" placeholder="输入消费金额快速定位" style="padding:6px 12px;font-size:15px;width:200px;border:1px solid #ccc;border-radius:4px;">
-      <button onclick="searchAmount()" style="padding:6px 16px;font-size:15px;background:#d32f2f;color:#fff;border:none;border-radius:4px;cursor:pointer;">定位</button>
+      <button id="btn-locate" onclick="searchAmount()" style="padding:6px 16px;font-size:15px;background:#d32f2f;color:#fff;border:none;border-radius:4px;cursor:pointer;">定位</button>
       <input type="number" id="search-points" min="1" max="30000" placeholder="输入积分值定位" style="padding:6px 12px;font-size:15px;width:200px;border:1px solid #ccc;border-radius:4px;margin-left:16px;">
       <span class="select-wrapper">
         <select id="points-type">
@@ -163,18 +205,18 @@
           <option value="tuesday">会员日积分</option>
         </select>
       </span>
-      <button onclick="searchPoints()" style="padding:6px 16px;font-size:15px;background:#1976d2;color:#fff;border:none;border-radius:4px;cursor:pointer;">积分定位</button>
+      <button id="btn-points-locate" onclick="searchPoints()" style="padding:6px 16px;font-size:15px;background:#1976d2;color:#fff;border:none;border-radius:4px;cursor:pointer;">积分定位</button>
     </div>
     <div class="scroll-table">
       <table id="points-table">
         <thead style="position:sticky;top:0;z-index:2;background:#fff;">
           <tr>
-            <th>消费金额(元)</th>
-            <th>会员等级</th>
-            <th>普通日每元积分</th>
-            <th>周二每元积分</th>
-            <th>积分累加值</th>
-            <th>会员日积分累加值</th>
+            <th id="th-amount">消费金额(元)</th>
+            <th id="th-level">会员等级</th>
+            <th id="th-normal">普通日每元积分</th>
+            <th id="th-tuesday">周二每元积分</th>
+            <th id="th-total">积分累加值</th>
+            <th id="th-tuesday-total">会员日积分累加值</th>
           </tr>
         </thead>
         <tbody>
@@ -182,11 +224,226 @@
         </tbody>
       </table>
     </div>
-    <div class="note">
+    <div class="note" id="note1">
       会员等级根据累计消费金额自动判定。
+    </div>
+    <div class="note" id="note3" style="margin-top:8px;">
+      消费金额自动按等级兑换为寿司币。寿司币有效期为12个月，过期自动清零。现金券和礼品券须在1个月内到店使用或领取，过期失效。升级：随时达成升级条件即可升级。降级：升级后12个月内无消费则降一级并积分清零。
     </div>
   </div>
   <script>
+    // 多语言文本
+    const LANGS = {
+      zh: {
+        title: '寿司郎会员积分加成表',
+        searchAmount: '输入消费金额快速定位',
+        locate: '定位',
+        searchPoints: '输入积分值定位',
+        pointsTypeNormal: '普通日积分',
+        pointsTypeTuesday: '会员日积分',
+        pointsLocate: '积分定位',
+        thAmount: '消费金额(元)',
+        thLevel: '会员等级',
+        thNormal: '普通日每元积分',
+        thTuesday: '周二每元积分',
+        thTotal: '积分累加值',
+        thTuesdayTotal: '会员日积分累加值',
+        note1: '会员等级根据累计消费金额自动判定。',
+        note2: '注：周二会员日积分为普通日积分的1.5倍。',
+        note3: '消费金额自动按等级兑换为寿司币。寿司币有效期为12个月，过期自动清零。现金券和礼品券须在1个月内到店使用或领取，过期失效。升级：随时达成升级条件即可升级。降级：升级后12个月内无消费则降一级并积分清零。',
+        thLevelRed: '赤食神',
+        thLevelSilver: '银食神',
+        thLevelGold: '金食神',
+        thLevelBlack: '黑食神',
+        thLevelOrigin: '元食神',
+        tdVisitRed: '-',
+        tdVisitSilver: '-',
+        tdVisitGold: '35次',
+        tdVisitBlack: '50次',
+        tdVisitOrigin: '100次',
+        tdAmountRed: '0~2999',
+        tdAmountSilver: '3000~6999',
+        tdAmountGold: '7000~9999',
+        tdAmountBlack: '10000~19999',
+        tdAmountOrigin: '20000以上',
+        tdMultRed: '1倍',
+        tdMultSilver: '1.1倍',
+        tdMultGold: '1.2倍',
+        tdMultBlack: '1.3倍',
+        tdMultOrigin: '1.5倍',
+        tdTueRed: '1.5倍',
+        tdTueSilver: '1.5倍',
+        tdTueGold: '1.5倍',
+        tdTueBlack: '1.5倍',
+        tdTueOrigin: '1.5倍',
+        tdVipGold: '30元现金券1枚<br>星级礼品券1枚',
+        tdVipBlack: '50元现金券1枚<br>玉级礼品券1枚',
+        tdVipOrigin: '100元现金券1枚<br>钻级礼品券1枚',
+        levels: ['赤食神','银食神','金食神','黑食神','元食神'],
+        dynamicTitle: '每一元消费对应实际积分（1元~20000元）',
+        rowDesc: ['','所需到店次数','所需总消费额(元)','积分倍数(消费1元=1寿司币)','周二会员日积分','VIP权益']
+      },
+      en: {
+        title: 'Sushiro Membership Points Table',
+        searchAmount: 'Enter amount to locate',
+        locate: 'Locate',
+        searchPoints: 'Enter points to locate',
+        pointsTypeNormal: 'Normal Day Points',
+        pointsTypeTuesday: 'Tuesday Points',
+        pointsLocate: 'Locate by Points',
+        thAmount: 'Amount (CNY)',
+        thLevel: 'Level',
+        thNormal: 'Normal Day Points/¥',
+        thTuesday: 'Tuesday Points/¥',
+        thTotal: 'Total Points',
+        thTuesdayTotal: 'Total Tuesday Points',
+        note1: 'Membership level is determined by total spending.',
+        note2: 'Note: Tuesday points are always 1.5x of normal day points.',
+        note3: 'Spending is automatically converted to sushi coins by level. Sushi coins are valid for 12 months, then cleared. Cash and gift coupons must be used or collected in-store within 1 month, otherwise invalid. Upgrade: Upgrade anytime when requirements are met. Downgrade: If no spending within 12 months after upgrade, downgrade one level and points are cleared.',
+        thLevelRed: 'Red',
+        thLevelSilver: 'Silver',
+        thLevelGold: 'Gold',
+        thLevelBlack: 'Black',
+        thLevelOrigin: 'Origin',
+        tdVisitRed: '-',
+        tdVisitSilver: '-',
+        tdVisitGold: '35 times',
+        tdVisitBlack: '50 times',
+        tdVisitOrigin: '100 times',
+        tdAmountRed: '0~2999',
+        tdAmountSilver: '3000~6999',
+        tdAmountGold: '7000~9999',
+        tdAmountBlack: '10000~19999',
+        tdAmountOrigin: '20000+',
+        tdMultRed: 'x1',
+        tdMultSilver: 'x1.1',
+        tdMultGold: 'x1.2',
+        tdMultBlack: 'x1.3',
+        tdMultOrigin: 'x1.5',
+        tdTueRed: 'x1.5',
+        tdTueSilver: 'x1.5',
+        tdTueGold: 'x1.5',
+        tdTueBlack: 'x1.5',
+        tdTueOrigin: 'x1.5',
+        tdVipGold: '¥30 Cash Coupon<br>Star Gift Coupon',
+        tdVipBlack: '¥50 Cash Coupon<br>Jade Gift Coupon',
+        tdVipOrigin: '¥100 Cash Coupon<br>Diamond Gift Coupon',
+        levels: ['Red','Silver','Gold','Black','Origin'],
+        dynamicTitle: 'Points per 1 CNY spent (1~20,000 CNY)',
+        rowDesc: ['','Required Visits','Required Total Spending (CNY)','Points Multiplier (1 CNY = 1 Sushi Coin)','Tuesday Points','VIP Benefits']
+      },
+      ja: {
+        title: 'スシロー会員ポイント表',
+        searchAmount: '金額を入力して検索',
+        locate: '検索',
+        searchPoints: 'ポイント値で検索',
+        pointsTypeNormal: '通常日ポイント',
+        pointsTypeTuesday: '火曜ポイント',
+        pointsLocate: 'ポイントで検索',
+        thAmount: '金額(元)',
+        thLevel: '会員ランク',
+        thNormal: '通常日ポイント/元',
+        thTuesday: '火曜ポイント/元',
+        thTotal: '累計ポイント',
+        thTuesdayTotal: '火曜累計ポイント',
+        note1: '会員ランクは累計消費金額で決まります。',
+        note2: '注：火曜ポイントは通常日の1.5倍です。',
+        note3: '消費金額は自動的にランクに応じて寿司コインに交換されます。寿司コインの有効期限は12ヶ月、期限切れで自動消去。現金券・ギフト券は1ヶ月以内に店舗で使用または受取、期限切れで無効。昇格：条件達成で随時昇格。降格：昇格後12ヶ月間消費がなければ1ランク降格しポイントもリセット。',
+        thLevelRed: '赤',
+        thLevelSilver: '銀',
+        thLevelGold: '金',
+        thLevelBlack: '黒',
+        thLevelOrigin: '元',
+        tdVisitRed: '-',
+        tdVisitSilver: '-',
+        tdVisitGold: '35回',
+        tdVisitBlack: '50回',
+        tdVisitOrigin: '100回',
+        tdAmountRed: '0~2999',
+        tdAmountSilver: '3000~6999',
+        tdAmountGold: '7000~9999',
+        tdAmountBlack: '10000~19999',
+        tdAmountOrigin: '20000以上',
+        tdMultRed: '1倍',
+        tdMultSilver: '1.1倍',
+        tdMultGold: '1.2倍',
+        tdMultBlack: '1.3倍',
+        tdMultOrigin: '1.5倍',
+        tdTueRed: '1.5倍',
+        tdTueSilver: '1.5倍',
+        tdTueGold: '1.5倍',
+        tdTueBlack: '1.5倍',
+        tdTueOrigin: '1.5倍',
+        tdVipGold: '30元現金券1枚<br>星級ギフト券1枚',
+        tdVipBlack: '50元現金券1枚<br>玉級ギフト券1枚',
+        tdVipOrigin: '100元現金券1枚<br>ダイヤギフト券1枚',
+        levels: ['赤','銀','金','黒','元'],
+        dynamicTitle: '1元ごとの実際ポイント（1元~20,000元）',
+        rowDesc: ['','来店回数','累計消費金額(元)','ポイント倍率(1元=1寿司コイン)','火曜ポイント','VIP特典']
+      }
+    };
+    let currentLang = 'zh';
+    function setLang(lang) {
+      currentLang = lang;
+      document.getElementById('lang-zh').classList.remove('active');
+      document.getElementById('lang-en').classList.remove('active');
+      document.getElementById('lang-ja').classList.remove('active');
+      document.getElementById('lang-' + lang).classList.add('active');
+      const t = LANGS[lang];
+      document.getElementById('main-title').textContent = t.title;
+      document.getElementById('search-amount').placeholder = t.searchAmount;
+      document.getElementById('btn-locate').textContent = t.locate;
+      document.getElementById('search-points').placeholder = t.searchPoints;
+      document.getElementById('btn-points-locate').textContent = t.pointsLocate;
+      document.getElementById('points-type').options[0].text = t.pointsTypeNormal;
+      document.getElementById('points-type').options[1].text = t.pointsTypeTuesday;
+      document.getElementById('th-amount').textContent = t.thAmount;
+      document.getElementById('th-level').textContent = t.thLevel;
+      document.getElementById('th-normal').textContent = t.thNormal;
+      document.getElementById('th-tuesday').textContent = t.thTuesday;
+      document.getElementById('th-total').textContent = t.thTotal;
+      document.getElementById('th-tuesday-total').textContent = t.thTuesdayTotal;
+      document.getElementById('note1').textContent = t.note1;
+      document.getElementById('note2').textContent = t.note2;
+      document.getElementById('note3').textContent = t.note3;
+      document.getElementById('th-level-red').textContent = t.thLevelRed;
+      document.getElementById('th-level-silver').textContent = t.thLevelSilver;
+      document.getElementById('th-level-gold').textContent = t.thLevelGold;
+      document.getElementById('th-level-black').textContent = t.thLevelBlack;
+      document.getElementById('th-level-origin').textContent = t.thLevelOrigin;
+      document.getElementById('td-visit-red').textContent = t.tdVisitRed;
+      document.getElementById('td-visit-silver').textContent = t.tdVisitSilver;
+      document.getElementById('td-visit-gold').textContent = t.tdVisitGold;
+      document.getElementById('td-visit-black').textContent = t.tdVisitBlack;
+      document.getElementById('td-visit-origin').textContent = t.tdVisitOrigin;
+      document.getElementById('td-amount-red').textContent = t.tdAmountRed;
+      document.getElementById('td-amount-silver').textContent = t.tdAmountSilver;
+      document.getElementById('td-amount-gold').textContent = t.tdAmountGold;
+      document.getElementById('td-amount-black').textContent = t.tdAmountBlack;
+      document.getElementById('td-amount-origin').textContent = t.tdAmountOrigin;
+      document.getElementById('td-mult-red').textContent = t.tdMultRed;
+      document.getElementById('td-mult-silver').textContent = t.tdMultSilver;
+      document.getElementById('td-mult-gold').textContent = t.tdMultGold;
+      document.getElementById('td-mult-black').textContent = t.tdMultBlack;
+      document.getElementById('td-mult-origin').textContent = t.tdMultOrigin;
+      document.getElementById('td-tue-red').textContent = t.tdTueRed;
+      document.getElementById('td-tue-silver').textContent = t.tdTueSilver;
+      document.getElementById('td-tue-gold').textContent = t.tdTueGold;
+      document.getElementById('td-tue-black').textContent = t.tdTueBlack;
+      document.getElementById('td-tue-origin').textContent = t.tdTueOrigin;
+      document.getElementById('td-vip-gold').innerHTML = t.tdVipGold;
+      document.getElementById('td-vip-black').innerHTML = t.tdVipBlack;
+      document.getElementById('td-vip-origin').innerHTML = t.tdVipOrigin;
+      document.getElementById('dynamic-title').textContent = t.dynamicTitle;
+      document.getElementById('th-row-desc').textContent = t.rowDesc[0];
+      document.getElementById('td-row-desc-visit').textContent = t.rowDesc[1];
+      document.getElementById('td-row-desc-amount').textContent = t.rowDesc[2];
+      document.getElementById('td-row-desc-mult').textContent = t.rowDesc[3];
+      document.getElementById('td-row-desc-tue').textContent = t.rowDesc[4];
+      document.getElementById('td-row-desc-vip').textContent = t.rowDesc[5];
+      // 重新渲染表格
+      renderTable();
+    }
     // 等级区间和倍数
     const levels = [
       { name: '赤食神', min: 0, max: 2999, normal: 1 },
@@ -203,30 +460,33 @@
     // 计算每个等级的起始金额（升级点）
     const upgradePoints = levels.slice(1).map(l => l.min);
 
-    const tbody = document.querySelector('#points-table tbody');
-    let totalPoints = 0;
-    let totalTuesdayPoints = 0;
-    for (let amount = 1; amount <= 20000; amount++) {
-      const level = getLevel(amount);
-      const normalPoint = level.normal;
-      const tuesdayPoint = 1.5;
-      totalPoints += normalPoint;
-      totalTuesdayPoints += tuesdayPoint;
-      const tr = document.createElement('tr');
-      // 高亮升级点
-      if (upgradePoints.includes(amount)) {
-        tr.style.background = '#ffe082';
-        tr.style.fontWeight = 'bold';
+    function renderTable() {
+      const tbody = document.querySelector('#points-table tbody');
+      tbody.innerHTML = '';
+      let totalPoints = 0;
+      let totalTuesdayPoints = 0;
+      for (let amount = 1; amount <= 20000; amount++) {
+        const level = getLevel(amount);
+        const normalPoint = level.normal;
+        const tuesdayPoint = 1.5;
+        totalPoints += normalPoint;
+        totalTuesdayPoints += tuesdayPoint;
+        const tr = document.createElement('tr');
+        // 高亮升级点
+        if (upgradePoints.includes(amount)) {
+          tr.style.background = '#ffe082';
+          tr.style.fontWeight = 'bold';
+        }
+        tr.innerHTML = `
+          <td>${amount}</td>
+          <td>${LANGS[currentLang].levels[levels.indexOf(level)]}</td>
+          <td>${normalPoint}</td>
+          <td>${tuesdayPoint}</td>
+          <td>${Math.round(totalPoints)}</td>
+          <td>${Math.round(totalTuesdayPoints)}</td>
+        `;
+        tbody.appendChild(tr);
       }
-      tr.innerHTML = `
-        <td>${amount}</td>
-        <td>${level.name}</td>
-        <td>${normalPoint}</td>
-        <td>${tuesdayPoint}</td>
-        <td>${Math.round(totalPoints)}</td>
-        <td>${Math.round(totalTuesdayPoints)}</td>
-      `;
-      tbody.appendChild(tr);
     }
 
     // 搜索定位功能
@@ -262,6 +522,12 @@
         searchAmount();
       }
     }
+
+    // 页面加载时渲染一次
+    renderTable();
+
+    // 页面加载时初始化多语言行说明
+    setLang(currentLang);
   </script>
 </body>
 </html> 
