@@ -7,4 +7,4 @@
 
 The reason why I want to develop this quick check table is simply because I like to eat conveyor belt sushi. I ate sushi 75 times and earned enough points to exchange for the convenient train toy that I had always dreamed of, Sushiro and Tomica. But after reviewing it, the current point calculation is too vague, and I don’t know how much sushi I ate to exchange for this toy, so I suddenly came up with this quick check table and reviewed it.
 
-![image](https://github.com/user-attachments/assets/ed01a2fc-7785-4b93-8e46-28a19f4e3337)
+![image](https://github.com/user-attachments/assets/420f03e6-3819-4a10-be49-79d5d39f9b9b)
