@@ -63,6 +63,55 @@
       overflow-y: auto;
       display: block;
     }
+    select {
+      padding: 6px 12px;
+      font-size: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #fff;
+      color: #333;
+      outline: none;
+      margin-left: 8px;
+      transition: border-color 0.2s;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+      cursor: pointer;
+    }
+    select:focus {
+      border-color: #d32f2f;
+    }
+    /* 自定义下拉箭头 */
+    select::-ms-expand {
+      display: none;
+    }
+    /* 兼容性处理 */
+    @media (max-width: 600px) {
+      select {
+        font-size: 14px;
+        padding: 5px 8px;
+      }
+    }
+    .select-wrapper {
+      display: inline-block;
+      position: relative;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .select-wrapper select {
+      padding-right: 32px;
+    }
+    .select-wrapper::after {
+      content: '>';
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%) rotate(90deg);
+      color: #888;
+      font-size: 16px;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
@@ -107,6 +156,14 @@
     <div style="margin-bottom:16px;text-align:right;">
       <input type="number" id="search-amount" min="1" max="20000" placeholder="输入消费金额快速定位" style="padding:6px 12px;font-size:15px;width:200px;border:1px solid #ccc;border-radius:4px;">
       <button onclick="searchAmount()" style="padding:6px 16px;font-size:15px;background:#d32f2f;color:#fff;border:none;border-radius:4px;cursor:pointer;">定位</button>
+      <input type="number" id="search-points" min="1" max="30000" placeholder="输入积分值定位" style="padding:6px 12px;font-size:15px;width:200px;border:1px solid #ccc;border-radius:4px;margin-left:16px;">
+      <span class="select-wrapper">
+        <select id="points-type">
+          <option value="normal">普通日积分</option>
+          <option value="tuesday">会员日积分</option>
+        </select>
+      </span>
+      <button onclick="searchPoints()" style="padding:6px 16px;font-size:15px;background:#1976d2;color:#fff;border:none;border-radius:4px;cursor:pointer;">积分定位</button>
     </div>
     <div class="scroll-table">
       <table id="points-table">
@@ -182,6 +239,27 @@
         row.scrollIntoView({ behavior: 'smooth', block: 'center' });
         row.style.outline = '2px solid #d32f2f';
         setTimeout(() => { row.style.outline = ''; }, 2000);
+      }
+    }
+
+    // 新增：积分定位功能
+    function searchPoints() {
+      const val = parseInt(document.getElementById('search-points').value, 10);
+      const type = document.getElementById('points-type').value;
+      if (!val || val < 1) return;
+      let totalPoints = 0, totalTuesdayPoints = 0, found = 0;
+      for (let amount = 1; amount <= 20000; amount++) {
+        const level = getLevel(amount);
+        totalPoints += level.normal;
+        totalTuesdayPoints += 1.5;
+        if ((type === 'normal' && Math.round(totalPoints) >= val) || (type === 'tuesday' && Math.round(totalTuesdayPoints) >= val)) {
+          found = amount;
+          break;
+        }
+      }
+      if (found) {
+        document.getElementById('search-amount').value = found;
+        searchAmount();
       }
     }
   </script>
