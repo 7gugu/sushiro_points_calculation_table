@@ -1,0 +1,2 @@
+# sushiro_points_calculation_table
+寿司郎积分快查表
