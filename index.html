@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="寿司郎会员积分加成表，根据消费金额自动判定会员等级，并计算积分累加值。">
+  <meta name="keywords" content="寿司郎,会员积分,加成表,消费金额,会员等级,积分累加值">
+  <meta name="author" content="7gugu">
+  <meta name="robots" content="index, follow">
+  <meta name="googlebot" content="index, follow">
+  <meta name="google" content="notranslate">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="theme-color" content="#d32f2f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>寿司郎会员积分加成表</title>
+  <style>
+    body {
+      font-family: "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      background: #f7f7f7;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      padding: 32px 24px;
+    }
+    h2 {
+      text-align: center;
+      color: #d32f2f;
+      margin-bottom: 24px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 24px;
+    }
+    th, td {
+      border: 1px solid #e0e0e0;
+      padding: 8px 0;
+      text-align: center;
+      font-size: 15px;
+    }
+    th {
+      background: #f5f5f5;
+      color: #333;
+    }
+    tr:nth-child(even) {
+      background: #fafafa;
+    }
+    .note {
+      color: #888;
+      font-size: 14px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .scroll-table {
+      max-height: 400px;
+      overflow-y: auto;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>寿司郎会员积分加成表</h2>
+    <table>
+      <tr>
+        <th>等级</th>
+        <th>普通日每元积分</th>
+        <th>周二每元积分</th>
+      </tr>
+      <tr>
+        <td>赤食神</td>
+        <td>1</td>
+        <td>1.5</td>
+      </tr>
+      <tr>
+        <td>银食神</td>
+        <td>1.1</td>
+        <td>1.5</td>
+      </tr>
+      <tr>
+        <td>金食神</td>
+        <td>1.2</td>
+        <td>1.5</td>
+      </tr>
+      <tr>
+        <td>黑食神</td>
+        <td>1.3</td>
+        <td>1.5</td>
+      </tr>
+      <tr>
+        <td>元食神</td>
+        <td>1.5</td>
+        <td>1.5</td>
+      </tr>
+    </table>
+    <div class="note">
+      注：周二会员日积分为普通日积分的1.5倍。
+    </div>
+    <h2>每一元消费对应实际积分（1元~20000元）</h2>
+    <div style="margin-bottom:16px;text-align:right;">
+      <input type="number" id="search-amount" min="1" max="20000" placeholder="输入消费金额快速定位" style="padding:6px 12px;font-size:15px;width:200px;border:1px solid #ccc;border-radius:4px;">
+      <button onclick="searchAmount()" style="padding:6px 16px;font-size:15px;background:#d32f2f;color:#fff;border:none;border-radius:4px;cursor:pointer;">定位</button>
+    </div>
+    <div class="scroll-table">
+      <table id="points-table">
+        <thead style="position:sticky;top:0;z-index:2;background:#fff;">
+          <tr>
+            <th>消费金额(元)</th>
+            <th>会员等级</th>
+            <th>普通日每元积分</th>
+            <th>周二每元积分</th>
+            <th>积分累加值</th>
+            <th>会员日积分累加值</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- JS生成数据 -->
+        </tbody>
+      </table>
+    </div>
+    <div class="note">
+      会员等级根据累计消费金额自动判定。
+    </div>
+  </div>
+  <script>
+    // 等级区间和倍数
+    const levels = [
+      { name: '赤食神', min: 0, max: 2999, normal: 1 },
+      { name: '银食神', min: 3000, max: 6999, normal: 1.1 },
+      { name: '金食神', min: 7000, max: 9999, normal: 1.2 },
+      { name: '黑食神', min: 10000, max: 19999, normal: 1.3 },
+      { name: '元食神', min: 20000, max: Infinity, normal: 1.5 }
+    ];
+
+    function getLevel(amount) {
+      return levels.find(l => amount >= l.min && amount <= l.max);
+    }
+
+    // 计算每个等级的起始金额（升级点）
+    const upgradePoints = levels.slice(1).map(l => l.min);
+
+    const tbody = document.querySelector('#points-table tbody');
+    let totalPoints = 0;
+    let totalTuesdayPoints = 0;
+    for (let amount = 1; amount <= 20000; amount++) {
+      const level = getLevel(amount);
+      const normalPoint = level.normal;
+      const tuesdayPoint = 1.5;
+      totalPoints += normalPoint;
+      totalTuesdayPoints += tuesdayPoint;
+      const tr = document.createElement('tr');
+      // 高亮升级点
+      if (upgradePoints.includes(amount)) {
+        tr.style.background = '#ffe082';
+        tr.style.fontWeight = 'bold';
+      }
+      tr.innerHTML = `
+        <td>${amount}</td>
+        <td>${level.name}</td>
+        <td>${normalPoint}</td>
+        <td>${tuesdayPoint}</td>
+        <td>${Math.round(totalPoints)}</td>
+        <td>${Math.round(totalTuesdayPoints)}</td>
+      `;
+      tbody.appendChild(tr);
+    }
+
+    // 搜索定位功能
+    function searchAmount() {
+      const val = parseInt(document.getElementById('search-amount').value, 10);
+      if (!val || val < 1 || val > 20000) return;
+      const table = document.getElementById('points-table');
+      const row = table.rows[val]; // 第一行为表头
+      if (row) {
+        row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        row.style.outline = '2px solid #d32f2f';
+        setTimeout(() => { row.style.outline = ''; }, 2000);
+      }
+    }
+  </script>
+</body>
+</html> 
